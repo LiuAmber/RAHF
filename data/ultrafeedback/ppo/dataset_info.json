@@ -1,0 +1,98 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "ultrafeedback-binarized-preferences-cleaned",
+  "dataset_size": 284953003,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/argilla/ultrafeedback-binarized-preferences-cleaned@770076f077c4c5e298498fa32f804857f46d5134/data/train-00000-of-00001.parquet": {
+      "num_bytes": 143257393,
+      "checksum": null
+    }
+  },
+  "download_size": 143257393,
+  "features": {
+    "source": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "prompt": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "chosen": [
+      {
+        "content": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "role": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      }
+    ],
+    "chosen-rating": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "chosen-model": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "rejected": [
+      {
+        "content": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "role": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      }
+    ],
+    "rejected-rating": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "rejected-model": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "prompt_length": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "chosen_response": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "rejected_respomse": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "chosen_length": {
+      "dtype": "int64",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 428210396,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 284953003,
+      "num_examples": 60917,
+      "dataset_name": "ultrafeedback-binarized-preferences-cleaned"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
