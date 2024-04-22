@@ -7,7 +7,7 @@ This repo includes a reference implementation of the RAHF for training language 
 The RAHF pipeline has three stages:
 
 - **Step 0**: Using the [HH-RLHF](https://huggingface.co/datasets/Dahoas/full-hh-rlhf) dataset, perform Supervised Fine-Tuning (SFT) to enable the model with instruction following and conversational abilities.
-- **Step 1**: Fine-tune the model using the preference dataset [Ultrafeedback](argilla/ultrafeedback-binarized-preferences-cleaned), instructing the model to understand human preferences.
+- **Step 1**: Fine-tune the model using the preference dataset [Ultrafeedback](https://huggingface.co/datasets/argilla/ultrafeedback-binarized-preferences-cleaned), instructing the model to understand human preferences.
 - **Step 2**: Collecting activity patterns and constructing a model with LoRA to fit these patterns.
 
 The files in this repo are:
