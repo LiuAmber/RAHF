@@ -19,12 +19,12 @@ def process_ultrafeedback(example,tokenizer,data_type="chosen"):
         output = example["rejected_respomse"]
 
     example["prompt"] = template.format(prompt=prompt)
-    example["prompt_length"] = len(tokenizer(example["prompt"]).input_ids)
+    example["prompt_length"] = len(tokenizer(example["prompt"], return_tensors="pt")["input_ids"][0])
 
     example["output"] = output
 
     example["text"] = example["prompt"] + example["output"]
-    example["text_length"] = len(tokenizer(example["text"]).input_ids)
+    example["text_length"] = len(tokenizer(example["text"], return_tensors="pt")["input_ids"][0])
     
     return example
 
@@ -34,8 +34,8 @@ def process_hh_rlhf(example,tokenizer):
 
     example['text'] = instruction + output+" </s>"
 
-    example["prompt_length"] = len(tokenizer(example["prompt"]).input_ids)
-    example["text_length"] = len(tokenizer(example["text"]).input_ids)
+    example["prompt_length"] = len(tokenizer(example["prompt"], return_tensors="pt")["input_ids"][0])
+    example["text_length"] = len(tokenizer(example["text"], return_tensors="pt")["input_ids"][0])
 
     return example
 
