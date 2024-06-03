@@ -1,5 +1,13 @@
 # RAHF: Representation Alignment from Human Feedback
 
+![title](img/title.png)
+
+## 🌟News
+
+- We used RAHF to align the Mistral-7B model and uploaded the evaluation results on AlpacaEval to the [AlpacaEval Leaderboard](https://tatsu-lab.github.io/alpaca_eval/). We achieved the best results among all 7B models currently on the leaderboard.
+
+  ![leaderboard](img/Leaderboard.png)
+
 ## Intruduction
 
 This repo includes a reference implementation of the RAHF for training language models from preference data, as described in the paper[Aligning Large Language Models with Human Preferences through Representation Engineering](https://arxiv.org/abs/2312.15997)
