@@ -64,8 +64,8 @@ def train(
     )
     tokenizer.padding_side = "right"
 
-    # train_data = load_dataset(data_path)
-    train_data = load_from_disk(data_path)
+    train_data = load_dataset(data_path)
+    #train_data = load_from_disk(data_path)
     if "hh-rlhf" in data_path:
         process_fn = partial(process_hh_rlhf,tokenizer=tokenizer)
     elif "ultrafeedback" in data_path:
@@ -74,7 +74,7 @@ def train(
 
     train_data = train_data.map(process_fn,num_proc=8)
     train_data = train_data.filter(lambda x:x["prompt_length"] <= MAX_INPUT_LENGTH and x["text_length"] <= MAX_LENGTH)    
-
+    print(train_data)
     
     training_args = TrainingArguments(
         output_dir=output_dir,
@@ -95,7 +95,7 @@ def train(
 
     trainer = SFTTrainer(
         model=model,
-        train_dataset=train_data,
+        train_dataset=train_data['train'],
         dataset_text_field="text",
         max_seq_length=MAX_LENGTH,
         args=training_args,

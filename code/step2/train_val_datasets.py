@@ -61,7 +61,7 @@ def process_tldr(example,tokenizer,data_type):
 
 def process_ultra_preference(example,tokenizer,data_type):
     if data_type == 'random':
-        template = "Human: {prompt}\n\nAssistant: "
+        template = "\n\nHuman: {prompt}\n\nAssistant: "
         example['prompt'] = prompt
         example['prompt_length'] = len(tokenizer(prompt, return_tensors="pt")["input_ids"][0])
         
