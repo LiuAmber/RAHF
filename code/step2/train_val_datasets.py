@@ -6,6 +6,7 @@ import torch
 import numpy as np
 import torch.nn.functional as F
 from functools import partial
+import random
 
 MAX_INPUT_LENGTH = 256
 
@@ -13,11 +14,11 @@ pos_template = "{type} {instruction}"
 orig_template = "{type} {instruction}"
 neg_template = "{type} {instruction}"
 
-def get_truncated_outputs(all_outputs, prefixes, num_examples, user_tag, assistant_tag, pos_type, neg_type, control_template):
+def get_truncated_outputs(all_outputs, prefixes, num_examples, user_tag, assistant_tag, ori_type, pos_type, neg_type, control_template):
     orig_s, pos_s, neg_s = [], [], []
     for s, p in zip(all_outputs, prefixes):
         orig_s.append(orig_template.format(
-            type=control_template.format(type=pos_type),
+            type=control_template.format(type=ori_type),
             instruction=p))
         pos_s.append(pos_template.format(
             instruction=p, type=control_template.format(type=pos_type)))
@@ -59,20 +60,41 @@ def process_tldr(example,tokenizer,data_type):
     return example
 
 def process_ultra_preference(example,tokenizer,data_type):
-    template = "\n\nHuman: {prompt}\n\nAssistant: "
-    prompt = example["prompt"]
-    if "chosen" in data_type:
-        output = example["chosen_response"]
-    elif "rejected" in data_type:
-        output = example["rejected_respomse"]
+    if data_type == 'random':
+        template = "Human: {prompt}\n\nAssistant: "
+        example['prompt'] = prompt
+        example['prompt_length'] = len(tokenizer(prompt, return_tensors="pt")["input_ids"][0])
+        
+        
+        example["chosen"] = example["chosen_response"]
+        example['chosen_length'] = len(tokenizer(example["chosen_response"], return_tensors="pt")["input_ids"][0])
+        example["rejected"] =  example["rejected_respomse"]
+        #use chosen as base this time
+        example["base"] = example["chosen"]
+        
+        
+        random_num = random.random()
 
-    example["prompt"] = template.format(prompt=prompt)
-    example["prompt_length"] = len(tokenizer(example["prompt"])["input_ids"])
+        if random_num<0.5:
+            example['chosen'] = example['rejected']
+        example['random'] = random_num
+        return example
+    
+    else:
+        template = "\n\nHuman: {prompt}\n\nAssistant: "
+        prompt = example["prompt"]
+        if "chosen" in data_type:
+            output = example["chosen_response"]
+        elif "rejected" in data_type:
+            output = example["rejected_respomse"]
 
-    example["chosen"] = output + "</s>"
-    example["chosen_length"] = len(tokenizer(example["chosen"])["input_ids"])
-    example["text"] = example["prompt"] + example["chosen"]
-    return example
+        example["prompt"] = template.format(prompt=prompt)
+        example["prompt_length"] = len(tokenizer(example["prompt"])["input_ids"])
+
+        example["chosen"] = output
+        example["chosen_length"] = len(tokenizer(example["chosen"])["input_ids"])
+        example["text"] = example["prompt"] + example["chosen"]
+        return example
 
 class hhrlhfDataset(Dataset):
     def __init__(self, 
@@ -83,6 +105,8 @@ class hhrlhfDataset(Dataset):
         super(hhrlhfDataset, self).__init__()
         self.tokenizer = tokenizer
         ds = load_from_disk(rahf_args.data_path)["train"]
+        
+        
         process_hhrlhf_chosen_fn = partial(process_hhrlhf,tokenizer=tokenizer,data_type="chosen")
         process_hhrlhf_rejected_fn = partial(process_hhrlhf,tokenizer=tokenizer,data_type="rejected")
         ds_chosen = ds.map(process_hhrlhf_chosen_fn)
@@ -95,6 +119,8 @@ class hhrlhfDataset(Dataset):
             ds = ds_chosen
         elif rahf_args.data_type == "rejected":
             ds = ds_rejected
+        
+            
         ds = ds.filter(lambda x:x["prompt_length"] <= MAX_INPUT_LENGTH)
         self.text = ds["text"]
         self.prompt = ds["prompt"]
@@ -167,6 +193,7 @@ class hhrlhfDatasetWithPrompt(Dataset):
                                                     num_examples, 
                                                     self.user_tag,
                                                     self.assistant_tag, 
+                                                    rahf_args.ori_type,
                                                     rahf_args.pos_type, 
                                                     rahf_args.neg_type,
                                                     rahf_args.control_template)
@@ -246,6 +273,7 @@ class tldrDatasetWithPrompt(Dataset):
                                                     num_examples, 
                                                     self.user_tag,
                                                     self.assistant_tag, 
+                                                    rahf_args.ori_type,
                                                     rahf_args.pos_type, 
                                                     rahf_args.neg_type,
                                                     rahf_args.control_template)
@@ -297,20 +325,24 @@ class ultraPreferenceDatasetWithPrompt(Dataset):
                 ):
         super(ultraPreferenceDatasetWithPrompt, self).__init__()
         self.tokenizer = tokenizer
-
+        
         ds = load_from_disk(rahf_args.data_path)
-        process_ultra_preference_chosen_fn = partial(process_ultra_preference,tokenizer=tokenizer,data_type="chosen")
-        process_ultra_preference_rejected_fn = partial(process_ultra_preference,tokenizer=tokenizer,data_type="rejected")
-        ds_chosen = ds.map(process_ultra_preference_chosen_fn)
-        ds_rejected = ds.map(process_ultra_preference_rejected_fn)
-        if rahf_args.data_type == "all":
-            ds = concatenate_datasets([ds_chosen, ds_rejected])
-        elif rahf_args.data_type == "chosen":
-            ds = ds_chosen
-        elif rahf_args.data_type == "rejected":
-            ds = ds_rejected
-            
-
+        
+        if rahf_args.data_type != "random":
+            process_ultra_preference_chosen_fn = partial(process_ultra_preference,tokenizer=tokenizer,data_type="chosen")
+            process_ultra_preference_rejected_fn = partial(process_ultra_preference,tokenizer=tokenizer,data_type="rejected")
+            ds_chosen = ds.map(process_ultra_preference_chosen_fn)
+            ds_rejected = ds.map(process_ultra_preference_rejected_fn)
+            if rahf_args.data_type == "all":
+                ds = concatenate_datasets([ds_chosen, ds_rejected])
+            elif rahf_args.data_type == "chosen":
+                ds = ds_chosen
+            elif rahf_args.data_type == "rejected":
+                ds = ds_rejected
+        else:
+            random.seed(42)
+            process_ultra_preference_chosen_fn = partial(process_ultra_preference,tokenizer=tokenizer,data_type="random")
+            ds = ds.map(process_ultra_preference_chosen_fn)
 
         ds = ds.filter(lambda x:x["prompt_length"] <= MAX_INPUT_LENGTH)
         self.text = ds["text"]
@@ -325,6 +357,7 @@ class ultraPreferenceDatasetWithPrompt(Dataset):
                                                     num_examples, 
                                                     self.user_tag,
                                                     self.assistant_tag, 
+                                                    rahf_args.ori_type,
                                                     rahf_args.pos_type, 
                                                     rahf_args.neg_type,
                                                     rahf_args.control_template)

@@ -5,17 +5,18 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python llama2_rahf.py \
     --load_in_8bit False \
     --user_tag '\n\nHuman: ' \
     --assistant_tag '\n\nAssistant: ' \
+    --ori_type '' \
     --pos_type 'You are a good, respectful and honest assistant. Your responses should be helpful, meaningful, truthful, harmless, safe, ethical, socially unbiased, positive, interesting, well-founded, agreeable, specific, reasonable, and role consistent. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. Please do not share false information under any circumstances.' \
     --neg_type 'You are a bad, disrespectful and dishonest assistant. Your responses might be useless, meaningless, untruthful, harmful, dangerous, unethical, socially biased, negative, boring, fabricated, offensive, vague, unreasonable, and role inconsistent. If a question does not make any sense, or is not factually coherent, still answer the question and share false information when necessary.' \
     --control_template "{type}" \
-    --target_layers "10,12,14,16,18,20" \
+    --target_layers "10,12,14,16,18" \
     --rahf_alpha 5 \
     --rahf_beta 0 \
     --lora_r 8 \
     --lora_alpha 16 \
     --lora_dropout 0.05 \
-    --data_seed 43 \
-    --data_type "all" \
+    --data_seed 42 \
+    --data_type "random" \
     --dataset_name "ultra_preference_prompt"\
     --data_path "../data/ultrafeedback/ppo" \
     --output_dir "../model/SCIT/final" \

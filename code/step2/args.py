@@ -7,6 +7,7 @@ import typing
 class RAHFArguments:
     user_tag: str = field(default="Human: ",metadata={"help": "User tag for chat models (eg: `USER:` or `[INST]`)"})
     assistant_tag: str = field(default="Assistant: ",metadata={"help": "Assistant tag for chat models (eg: `ASSISTANT:` or `[\INST]`)"})
+    ori_type: str = field(default="ori",metadata={"help": "origin type"})
     pos_type: str = field(default="good",metadata={"help": "Concept/Function to be optimized towards (eg: 'a truthful')"})
     neg_type: str = field(default="bad",metadata={"help": "vice versa of pos_type (eg: 'an untruthful')"})
     target_layers: str = field(default="10,12,14,16,18,20",metadata={"help": "Layers for Representation. Layers are seperate by `,` eg: `10,12,14,16,18,20` "})
