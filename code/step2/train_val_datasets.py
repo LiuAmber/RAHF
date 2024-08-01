@@ -78,6 +78,7 @@ def process_ultra_preference(example,tokenizer,data_type):
         if random_num<0.5:
             example['chosen'] = example['rejected']
         example['random'] = random_num
+        example["text"] = example["prompt"] + example["chosen"]
         return example
     
     else:
