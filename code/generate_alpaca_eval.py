@@ -17,7 +17,8 @@ def main(
     
     def process_alpacaeval(example):
         prompt = "\n\nHuman: " + example['instruction'] + "\n\nAssistant: "
-        # prompt = "<s>[INST] " + example['instruction'] + " [/INST]" # 
+        # for SCIT
+        # prompt = "Human: " + example['instruction'] + "\n\nAssistant: "
         example["prompt"] = prompt
         return example
 

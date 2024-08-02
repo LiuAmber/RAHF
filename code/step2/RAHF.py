@@ -6,7 +6,7 @@ Our codebase has been expanded and modified based on the original implementation
 
 import gc
 import torch.nn.functional as F
-
+import os
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training,PeftModel,prepare_model_for_int8_training,AutoPeftModelForCausalLM
 import transformers
 from transformers import Trainer, BitsAndBytesConfig, deepspeed,set_seed,AutoModelForCausalLM
@@ -259,24 +259,42 @@ def train():
                 )
 
     elif training_args.method == "SCIT":
+        if model_args.model_base_lora_path:
+            model_base = AutoPeftModelForCausalLM.from_pretrained(
+                model_args.model_good_lora_path, # location of saved SFT model
+                #low_cpu_mem_usage=True,
+                device_map=device_map,
+                #torch_dtype=torch.bfloat16,
+                #load_in_8bit=model_args.load_in_8bit,
+                #is_trainable=False,
+            )
+        else:
+            model_base = AutoModelForCausalLM.from_pretrained(
+                    model_args.model_base_name_or_path,
+                    #load_in_8bit=model_args.load_in_8bit,
+                    device_map=device_map,
+                    #low_cpu_mem_usage=True,
+                    #torch_dtype=torch.bfloat16,
+                )
+            
         if model_args.model_lora_path:
             model = AutoPeftModelForCausalLM.from_pretrained(
                 model_args.model_lora_path, # location of saved SFT model
-                low_cpu_mem_usage=True,
+                #low_cpu_mem_usage=True,
                 device_map=device_map,
-                torch_dtype=torch.bfloat16,
-                load_in_8bit=model_args.load_in_8bit,
-                is_trainable=True,
+                #torch_dtype=torch.bfloat16,
+                #load_in_8bit=model_args.load_in_8bit,
+                #is_trainable=True,
             )
         else:
             model = AutoModelForCausalLM.from_pretrained(
                     model_args.model_name_or_path,
-                    load_in_8bit=model_args.load_in_8bit,
+                    #load_in_8bit=model_args.load_in_8bit,
                     device_map=device_map,
-                    low_cpu_mem_usage=True,
-                    torch_dtype=torch.bfloat16,
+                    #low_cpu_mem_usage=True,
+                    #torch_dtype=torch.bfloat16,
                 )
-            model = prepare_model_for_kbit_training(model)
+            #model = prepare_model_for_kbit_training(model)
 
             rahf_target_layers = [int(layer) for layer in rahf_args.target_layers.split(",")] # target representations
             lora_layers_to_transform = list(range(rahf_target_layers[-1] + 1)) # LoRA layers
@@ -291,23 +309,7 @@ def train():
                 )
             model = get_peft_model(model, config)
 
-        if model_args.model_base_lora_path:
-            model_base = AutoPeftModelForCausalLM.from_pretrained(
-                model_args.model_good_lora_path, # location of saved SFT model
-                low_cpu_mem_usage=True,
-                device_map=device_map,
-                torch_dtype=torch.bfloat16,
-                load_in_8bit=model_args.load_in_8bit,
-                is_trainable=False,
-            )
-        else:
-            model_base = AutoModelForCausalLM.from_pretrained(
-                    model_args.model_base_name_or_path,
-                    load_in_8bit=model_args.load_in_8bit,
-                    device_map=device_map,
-                    low_cpu_mem_usage=True,
-                    torch_dtype=torch.bfloat16,
-                )
+        
 
     else:
         raise ValueError("Unrecognized method, please enter \"SCIT\" or \"DUAL\"")

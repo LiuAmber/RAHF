@@ -1,5 +1,5 @@
 CUDA_VISIBLE_DEVICES=0,1,2,3 python step1/SCIT-step1.py \
-    --base_model  "meta-llama/Llama-2-7b-hf" \
+    --base_model  "../model/SFT" \
     --seed 42 \
     --data_path "../data/ultrafeedback/rm" \
     --batch_size 64 \

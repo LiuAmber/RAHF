@@ -10,9 +10,9 @@ import random
 
 MAX_INPUT_LENGTH = 256
 
-pos_template = "{type} {instruction}"
-orig_template = "{type} {instruction}"
-neg_template = "{type} {instruction}"
+pos_template = "{type}{instruction}"
+orig_template = "{type}\n\n{instruction}"
+neg_template = "{type}\n\n{instruction}"
 
 def get_truncated_outputs(all_outputs, prefixes, num_examples, user_tag, assistant_tag, ori_type, pos_type, neg_type, control_template):
     orig_s, pos_s, neg_s = [], [], []
@@ -61,10 +61,10 @@ def process_tldr(example,tokenizer,data_type):
 
 def process_ultra_preference(example,tokenizer,data_type):
     if data_type == 'random':
-        template = "\n\nHuman: {prompt}\n\nAssistant: "
-        example['prompt'] = prompt
+        template = "Human: {prompt}\n\nAssistant: "
+        prompt = example["prompt"]
         example['prompt_length'] = len(tokenizer(prompt, return_tensors="pt")["input_ids"][0])
-        
+        example["prompt"] = template.format(prompt=prompt)
         
         example["chosen"] = example["chosen_response"]
         example['chosen_length'] = len(tokenizer(example["chosen_response"], return_tensors="pt")["input_ids"][0])
@@ -79,6 +79,7 @@ def process_ultra_preference(example,tokenizer,data_type):
             example['chosen'] = example['rejected']
         example['random'] = random_num
         example["text"] = example["prompt"] + example["chosen"]
+        
         return example
     
     else:
@@ -467,8 +468,8 @@ def load_tqa_sentences(user_tag, assistant_tag):
         q = d['question']
         for i in range(len(d['mc1_targets']['labels'])):
             a = d['mc1_targets']['choices'][i]
-            questions.append(f'{user_tag} ' + q + ' ')
-            answers.append(f'{assistant_tag} ' + a)
+            questions.append(f'Human: ' + q + '\n\nAssistant: ')
+            answers.append(f'' + a)
 
         labels.append(d['mc1_targets']['labels'])
     return np.array(questions), np.array(answers), labels
@@ -484,7 +485,7 @@ def load_arc_sentences(challenge=False):
         choices = d['choices']['text']
         label = [d['answerKey'] == c for c in d['choices']['label']]
         for a in choices:
-            questions.append(f'\n\nHuman: ' + q + '\n\nHuman: ')
+            questions.append(f'Human: ' + q + '\n\nAssistant:')
             answers.append(a)
         labels.append(label)
     return np.array(questions), np.array(answers), labels

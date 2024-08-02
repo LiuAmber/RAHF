@@ -1,9 +1,9 @@
-CUDA_VISIBLE_DEVICES=0,1,2,3 python llama2_rahf.py \
+CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=0,1,2,3 python step2/RAHF.py \
     --method "SCIT" \
-    --model_name_or_path  "../model/SCIT/hir" \
-    --model_base_name_or_path  "../model/SCIT/hir" \
+    --model_name_or_path  "/data/wxh/RAHF/RAHF/model/SCIT/hir" \
+    --model_base_name_or_path  "/data/wxh/RAHF/RAHF/model/SCIT/hir" \
     --load_in_8bit False \
-    --user_tag '\n\nHuman: ' \
+    --user_tag 'Human: ' \
     --assistant_tag '\n\nAssistant: ' \
     --ori_type '' \
     --pos_type 'You are a good, respectful and honest assistant. Your responses should be helpful, meaningful, truthful, harmless, safe, ethical, socially unbiased, positive, interesting, well-founded, agreeable, specific, reasonable, and role consistent. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. Please do not share false information under any circumstances.' \
@@ -40,5 +40,5 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python llama2_rahf.py \
     --model_max_length 768 \
     --q_lora False \
     --gradient_checkpointing True \
-    --max_res_len 256 \
+    --max_res_len 512 \
     --report_to none 
