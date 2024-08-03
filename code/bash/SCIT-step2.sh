@@ -21,7 +21,7 @@ CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=0,1,2,3 python step2/RAHF.py \
     --data_path "../data/ultrafeedback/ppo" \
     --output_dir "../model/SCIT/final" \
     --overwrite_output_dir \
-    --max_steps 500 \
+    --max_steps 450 \
     --bf16 True \
     --per_device_train_batch_size 16 \
     --per_device_eval_batch_size 32 \
