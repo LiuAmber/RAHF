@@ -12,9 +12,8 @@
 
 This repo includes a reference implementation of the RAHF for training language models from preference data, as described in the paper[Aligning Large Language Models with Human Preferences through Representation Engineering](https://arxiv.org/abs/2312.15997)
 
-The RAHF pipeline has three stages:
+The RAHF pipeline has two stages:
 
-- **Step 0**: Using the [HH-RLHF](https://huggingface.co/datasets/Dahoas/full-hh-rlhf) dataset, perform Supervised Fine-Tuning (SFT) to enable the model with instruction following and conversational abilities.
 - **Step 1**: Fine-tune the model using the preference dataset [Ultrafeedback](https://huggingface.co/datasets/argilla/ultrafeedback-binarized-preferences-cleaned), instructing the model to understand human preferences.
 - **Step 2**: Collecting activity patterns and constructing a model with LoRA to fit these patterns.
 
@@ -31,13 +30,6 @@ The files in this repo are:
 
 ```bash
 pip install -r requirements.txt
-```
-
-### Step0:  Using the [HH-RLHF](https://huggingface.co/datasets/Dahoas/full-hh-rlhf) dataset, perform Supervised Fine-Tuning (SFT) 
-
-```bash
-cd code
-bash bash/SFT-step0.sh
 ```
 
 ### Step1: Instructing LLMs on Human Preferences 
