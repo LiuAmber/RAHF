@@ -1,5 +1,5 @@
 CUDA_VISIBLE_DEVICES=0,1,2,3 python step1/SCIT-step1.py \
-    --base_model  "../model/SFT" \
+    --base_model  "Liuwenhao2022/RAHF-SFT" \
     --seed 42 \
     --data_path "../data/ultrafeedback/rm" \
     --batch_size 64 \
