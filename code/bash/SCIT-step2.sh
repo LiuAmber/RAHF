@@ -1,7 +1,7 @@
 CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=0,1,2,3 python step2/RAHF.py \
     --method "SCIT" \
-    --model_name_or_path  "/data/wxh/RAHF/RAHF/model/SCIT/hir" \
-    --model_base_name_or_path  "/data/wxh/RAHF/RAHF/model/SCIT/hir" \
+    --model_name_or_path  "../model/SCIT/hir" \
+    --model_base_name_or_path  "../model/SCIT/hir" \
     --load_in_8bit False \
     --user_tag 'Human: ' \
     --assistant_tag '\n\nAssistant: ' \
